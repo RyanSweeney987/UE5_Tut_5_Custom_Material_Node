@@ -1,0 +1,23 @@
+﻿{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "UE5_Tut_5_Custom_Material_Nodes",
+	"Description": "Tutorial code for creating your own material node for use with any material",
+	"Category": "Other",
+	"CreatedBy": "Ryan Sweeney",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "UE5_Tut_5_Custom_Material_Nodes",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
