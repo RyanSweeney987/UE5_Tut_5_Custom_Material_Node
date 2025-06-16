@@ -20,13 +20,14 @@ public:
     FExpressionInput ExampleAInput;
 
 	// This allows us to set the value without needing to connect a pin
-	// The engine automatically picks up the connection as ExampleA without the suffix "Input"
+	// OverridingInputProperty links this value to the input variable
 	UPROPERTY(EditAnywhere, meta = (Tooltip = "Example tooltip", OverridingInputProperty = "ExampleAInput"))
 	FVector4f ExampleA = FVector4f(0.0f, 0.0f, 0.0f, 0.0f);
 
 public:
 	UExampleMaterialExpression();
 
+protected:
 #if WITH_EDITOR
 	//~ Begin UMaterialExpression Interface
 	virtual int32 Compile(class FMaterialCompiler* Compiler, int32 OutputIndex) override;

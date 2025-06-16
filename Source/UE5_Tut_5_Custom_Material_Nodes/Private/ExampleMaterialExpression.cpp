@@ -7,14 +7,14 @@
 
 UExampleMaterialExpression::UExampleMaterialExpression()
 {
-	// Structure to hold one-time initialization for the name
+	// This is used for the add menu category in the Material Editor
 	struct FConstructorStatics
 	{
-		FText NAME_EXAMPLE_MATERIAL_EXPRESSION; // This is the name of the expression that will be displayed in the Material Editor
+		FText MENU_CATEGORY; 
 		// This is used for placing the expression in the correct category
 		// You can reference multiple categories here, see: https://github.com/EpicGames/UnrealEngine/blob/ue5-main/Engine/Source/Runtime/Engine/Private/Materials/MaterialExpressions.cpp#L18670
 		FConstructorStatics()
-			: NAME_EXAMPLE_MATERIAL_EXPRESSION(NSLOCTEXT( "ExampleNamespace", "Example", "Example Material Expression" )) // These can be anything. Like: NAME_Math(LOCTEXT( "Math", "Math" ))
+			: MENU_CATEGORY(NSLOCTEXT( "ExampleNamespace", "Example", "Example Material Expressions" )) // These can be anything. Like: NAME_Math(LOCTEXT( "Math", "Math" ))
 		{
 		}
 	};
@@ -22,7 +22,7 @@ UExampleMaterialExpression::UExampleMaterialExpression()
 
 
 #if WITH_EDITORONLY_DATA
-	MenuCategories.Add(ConstructorStatics.NAME_EXAMPLE_MATERIAL_EXPRESSION);
+	MenuCategories.Add(ConstructorStatics.MENU_CATEGORY);
 
 	ExampleAInput.InputName = "Example Rename of Pin";
 	
@@ -33,7 +33,7 @@ UExampleMaterialExpression::UExampleMaterialExpression()
 
 	// Setup output pins
 	Outputs.Reset();
-	Outputs.Add(FExpressionOutput(TEXT("Result"), true, true, false, false, false));
+	Outputs.Add(FExpressionOutput(TEXT("Result"), true, true, true, true, true));
 #endif
 }
 
@@ -83,6 +83,7 @@ int32 UExampleMaterialExpression::CompilePreview(class FMaterialCompiler* Compil
  */
 void UExampleMaterialExpression::GetCaption(TArray<FString>& OutCaptions) const
 {
+	// Name for the node
 	OutCaptions.Add(TEXT("Example Material Expression"));
 }
 
