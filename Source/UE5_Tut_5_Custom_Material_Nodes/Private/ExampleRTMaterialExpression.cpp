@@ -44,51 +44,52 @@ UExampleRTMaterialExpression::UExampleRTMaterialExpression()
 
 int32 UExampleRTMaterialExpression::Compile(class FMaterialCompiler* Compiler, int32 OutputIndex)
 {
-	UMaterialExpression* InputExpression = TextureInput.GetTracedInput().Expression;
-	
-	if (Texture || InputExpression)
+	const UMaterialExpression* InputExpression = TextureInput.GetTracedInput().Expression;
+
+	// Moved this here so it's an early exit to make it easier to work with
+	if(!InputExpression && !Texture)
 	{
-		int32 TextureCodeIndex = INDEX_NONE;
-		EMaterialSamplerType Sampler = EMaterialSamplerType::SAMPLERTYPE_Color;
+		return Compiler->Error(TEXT("No texture or input expression connected to ExampleRTMaterialExpression"));
+	}
+	
+	int32 TextureCodeIndex = INDEX_NONE;
+	EMaterialSamplerType Sampler = EMaterialSamplerType::SAMPLERTYPE_Color;
 
-		if (InputExpression)
-		{
-			// Get the texture from the texture object node
-			TextureCodeIndex = TextureInput.Compile(Compiler);
-			// Get the actual texture object so we can get the sampler type
-			UObject* InTex = TextureInput.Expression->GetReferencedTexture();
-			Sampler = UMaterialExpressionTextureBase::GetSamplerTypeForTexture(Cast<const UTexture>(InTex));
-		}
-		else
-		{
-			// Get the sampler from the texture input
-			Sampler = UMaterialExpressionTextureBase::GetSamplerTypeForTexture(Texture);
-			constexpr ESamplerSourceMode SamplerSource = SSM_FromTextureAsset;
+	if (InputExpression)
+	{
+		// Get the texture from the texture object node
+		TextureCodeIndex = TextureInput.Compile(Compiler);
+		// Get the actual texture object so we can get the sampler type
+		UObject* InTex = TextureInput.Expression->GetReferencedTexture();
+		Sampler = UMaterialExpressionTextureBase::GetSamplerTypeForTexture(Cast<const UTexture>(InTex));
+	}
+	else
+	{
+		// Get the sampler from the texture input
+		Sampler = UMaterialExpressionTextureBase::GetSamplerTypeForTexture(Texture);
+		constexpr ESamplerSourceMode SamplerSource = SSM_FromTextureAsset;
 
-			// Get the texture
-			int32 TextureRef = INDEX_NONE;
-			TextureCodeIndex = Compiler->Texture(Texture, TextureRef, Sampler, SamplerSource, TMVM_None);
-		}
-
-		// Get the texture coordinate
-		const int32 TextureCoordinate = Compiler->TextureCoordinate(0, false, false);	
-		// Sample the texture
-		const int32 SampleTexture = Compiler->TextureSample(TextureCodeIndex, TextureCoordinate, Sampler);
-		// Get each colour
-		const int32 Red = Compiler->ComponentMask(SampleTexture, true, false, false, false);
-		const int32 Green = Compiler->ComponentMask(SampleTexture, false, true, false, false);
-		const int32 Blue = Compiler->ComponentMask(SampleTexture, false, false, true, false);
-		const int32 Alpha = Compiler->ComponentMask(SampleTexture, false, false, false, true);
-
-		// Recombine them in the order of Alpha, Blue, Green, Red
-		int32 Result = Compiler->AppendVector(Alpha, Blue);
-		Result = Compiler->AppendVector(Result, Green);
-		Result = Compiler->AppendVector(Result, Red);
-		
-		return Result;
+		// Get the texture
+		int32 TextureRef = INDEX_NONE;
+		TextureCodeIndex = Compiler->Texture(Texture, TextureRef, Sampler, SamplerSource, TMVM_None);
 	}
 
-	return Compiler->Error(TEXT("No texture or input expression connected to ExampleRTMaterialExpression"));
+	// Get the texture coordinate
+	const int32 TextureCoordinate = Compiler->TextureCoordinate(0, false, false);	
+	// Sample the texture
+	const int32 SampleTexture = Compiler->TextureSample(TextureCodeIndex, TextureCoordinate, Sampler);
+	// Get each colour
+	const int32 Red = Compiler->ComponentMask(SampleTexture, true, false, false, false);
+	const int32 Green = Compiler->ComponentMask(SampleTexture, false, true, false, false);
+	const int32 Blue = Compiler->ComponentMask(SampleTexture, false, false, true, false);
+	const int32 Alpha = Compiler->ComponentMask(SampleTexture, false, false, false, true);
+
+	// Recombine them in the order of Alpha, Blue, Green, Red
+	int32 Result = Compiler->AppendVector(Alpha, Blue);
+	Result = Compiler->AppendVector(Result, Green);
+	Result = Compiler->AppendVector(Result, Red);
+		
+	return Result;
 }
 
 int32 UExampleRTMaterialExpression::CompilePreview(class FMaterialCompiler* Compiler, int32 OutputIndex)
@@ -107,5 +108,20 @@ void UExampleRTMaterialExpression::GetCaption(TArray<FString>& OutCaptions) cons
  */
 uint32 UExampleRTMaterialExpression::GetInputType(int32 InputIndex)
 {
+	// If you have multiple inputs you would set it up like this:
+	// if(InputIndex == 0)
+	// {
+	// 	return MCT_Float;
+	// }
+	// if(InputIndex == 1)
+	// {
+	// 	return MCT_Texture;
+	// }
+	// if(InputIndex == 2)
+	// {
+	// 	return MCT_TextureCube;
+	// }
+
+	// This means we take a Texture Object node as an input
 	return MCT_Texture;
 }

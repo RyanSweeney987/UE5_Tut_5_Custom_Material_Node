@@ -68,6 +68,25 @@ int32 UExampleMaterialExpression::Compile(class FMaterialCompiler* Compiler, int
 	int32 Result = Compiler->AppendVector(Alpha, Blue);
 	Result = Compiler->AppendVector(Result, Green);
 	Result = Compiler->AppendVector(Result, Red);
+
+	// If you have multiple output pins, you can use the OutputIndex to return different values
+	// For example:
+	// if(OutputIndex == 0)
+	// {
+	//     return Result; // Return the RGBA value
+	// }
+	// else if(OutputIndex == 1)
+	// {
+	//     return Red; // Return just the Red channel
+	// }
+	// else if(OutputIndex == 2)
+	// {
+	//     return Green; // Return just the Green channel
+	// }
+	// else if(OutputIndex == 3)
+	// {
+	//     return Blue; // Return just the Blue channel
+	// }
 	
 	return Result;
 }
